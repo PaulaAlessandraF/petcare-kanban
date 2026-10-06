@@ -62,10 +62,10 @@ function renderizarColuna(colunaId, listaTarefas) {
         
         cartao.innerHTML = `
             <button class="btn-apagar" onclick="apagarTarefa('${tarefa.id}', '${colunaId}')" title="Excluir">✕</button>
-            <h4>🐾 ${tarefa.titulo}</h4>
+            <h4> ${tarefa.titulo}</h4>
             <p><strong>Pet:</strong> ${tarefa.pet}</p>
             <p>${tarefa.descricao}</p>
-            <div class="cartao-historico">🕒 ${tarefa.historico}</div>
+            <div class="cartao-historico"> ${tarefa.historico}</div>
         `;
 
         cartao.addEventListener('dragstart', function(evento) {
@@ -140,9 +140,9 @@ function mudarIdentificacao() {
     var nomeResponsavel = prompt("Quem é o responsável pelos cuidados agora?", "Paula");
 
     if (nomePet) {
-        document.getElementById("labelPet").innerHTML = `🐶 Pet: <strong>${nomePet}</strong>`;
+        document.getElementById("labelPet").innerHTML = ` Pet: <strong>${nomePet}</strong>`;
     }
     if (nomeResponsavel) {
-        document.getElementById("labelResponsavel").innerHTML = `👤 Cuidador(a): <strong>${nomeResponsavel}</strong>`;
+        document.getElementById("labelResponsavel").innerHTML = ` Cuidador(a): <strong>${nomeResponsavel}</strong>`;
     }
 }

@@ -2,57 +2,105 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title> PetCare - Gestão de Cuidados</title>
+    <title>PetCare - Gestão de Cuidados</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
+
 <body>
+
     <header>
-        <h1> PetCare: Gestão de Cuidados em Tempo Real</h1>
+        <h1>PetCare: Gestão de Cuidados em Tempo Real</h1>
+
         <div class="info-pet">
-            <span id="labelPet"> Pet: <strong>Zoe</strong></span> | 
-            <span id="labelResponsavel"> Cuidador(a): <strong>Paula</strong></span>
-            <button onclick="mudarIdentificacao()" class="btn-mudar">Alterar</button>
+            <span id="labelPet">
+                Pet: <strong>Zoe</strong>
+            </span>
+
+            |
+
+            <span id="labelResponsavel">
+                Cuidador(a): <strong>Paula</strong>
+            </span>
+
+            <button onclick="mudarIdentificacao()" class="btn-mudar">
+                Alterar
+            </button>
         </div>
     </header>
 
-    <!-- Formulário completo para Título e Descrição -->
+
+    <!-- Formulário para adicionar cuidado -->
     <div class="container-formulario">
-        <input type="text" id="tituloTarefa" placeholder="Ex: Dar remédio de pulgas...">
-        <input type="text" id="descricaoTarefa" placeholder="Ex: Comprimido de 50mg após o almoço...">
-        <button onclick="adicionarTarefa()">Adicionar Cuidado</button>
+        <input
+            type="text"
+            id="tituloTarefa"
+            placeholder="Ex: Dar remédio de pulgas..."
+        >
+
+        <input
+            type="text"
+            id="descricaoTarefa"
+            placeholder="Ex: Comprimido de 50mg após o almoço..."
+        >
+
+        <button onclick="adicionarTarefa()">
+            Adicionar Cuidado
+        </button>
     </div>
-
-    <button onclick="abrirHistorico()">Ver Histórico</button>
-    <div id="historico"></div>
-    
-
 
 
     <!-- As 3 colunas do Kanban -->
     <div class="quadro-kanban">
-        <div class="coluna-kanban" ondragover="permitirDrop(event)" ondrop="soltar(event, 'todo')">
-            <h2> A Fazer</h2>
+
+        <div
+            class="coluna-kanban"
+            ondragover="permitirDrop(event)"
+            ondrop="soltar(event, 'todo')"
+        >
+            <h2>A Fazer</h2>
             <div id="lista-todo"></div>
         </div>
 
-        <div class="coluna-kanban" ondragover="permitirDrop(event)" ondrop="soltar(event, 'doing')">
-            <h2> Em Andamento</h2>
+
+        <div
+            class="coluna-kanban"
+            ondragover="permitirDrop(event)"
+            ondrop="soltar(event, 'doing')"
+        >
+            <h2>Em Andamento</h2>
             <div id="lista-doing"></div>
         </div>
 
-        <div class="coluna-kanban" ondragover="permitirDrop(event)" ondrop="soltar(event, 'done')">
-            <h2> Concluído</h2>
+
+        <div
+            class="coluna-kanban"
+            ondragover="permitirDrop(event)"
+            ondrop="soltar(event, 'done')"
+        >
+            <h2>Concluído</h2>
             <div id="lista-done"></div>
         </div>
+
     </div>
 
+    <!-- Histórico de exclusões -->
     <div class="historico-exclusoes">
-        <button onclick="abrirHistorico()"> Ver Histórico de Exclusões</button>
+
+        <button onclick="abrirHistorico()">
+            Ver Histórico de Exclusões
+        </button>
+
+         <button onclick="limparHistorico()">
+            Limpar Histórico
+        </button>
+
         <div id="historico"></div>
+
     </div>
 
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

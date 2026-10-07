@@ -1,18 +1,29 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
+# cria o servidor e liga o Socket.IO
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'segredo-petcare'
 socketio = SocketIO(app)
 
+# tarefas separadas pelas 3 colunas
 quadro_tarefas = {
     'todo': [],
     'doing': [],
     'done': [],
 }
 
+# histórico das tarefas excluídas
 historico_exclusoes = []
+
+proximo_id = 1
+
+
+def obter_data_hora():
+    agora = datetime.now(ZoneInfo('America/Sao_Paulo'))
+    return agora.strftime('%d/%m/%Y às %H:%M')
 
 
 @app.route('/')
@@ -20,47 +31,72 @@ def pagina_inicial():
     return render_template('index.html')
 
 
+# envia o quadro atual para o navegador
 @socketio.on('obter_quadro')
 def enviar_quadro():
     emit('atualizar_quadro', quadro_tarefas)
 
 
-@socketio.on('adicionar_tarefa')
-def adicionar_tarefa(dados):
-    nova_id = str(
-        len(quadro_tarefas['todo']) +
-        len(quadro_tarefas['doing']) +
-        len(quadro_tarefas['done']) + 1
+# envia o histórico de exclusões
+@socketio.on('obter_historico')
+def enviar_historico():
+    emit('historico_atualizado', historico_exclusoes)
+
+# limpa o histórico de exclusões
+@socketio.on('limpar_historico')
+def limpar_historico():
+    historico_exclusoes.clear()
+
+    emit(
+        'historico_atualizado',
+        historico_exclusoes,
+        broadcast=True
     )
 
-    agora = datetime.now().strftime('%d/%m/%Y às %H:%M')
+
+# cria uma nova tarefa
+@socketio.on('adicionar_tarefa')
+def adicionar_tarefa(dados):
+    global proximo_id
+
+    agora = obter_data_hora()
+
+    titulo = dados.get('titulo', 'Sem título')
+    descricao = dados.get('descricao', 'Sem observações')
+    pet = dados.get('pet', 'Não informado')
+    responsavel = dados.get('responsavel', 'Alguém')
+
+    registro_criacao = {
+        'acao': 'criado',
+        'responsavel': responsavel,
+        'data_hora': agora,
+        'etapa': 'todo'
+    }
 
     nova_tarefa = {
-        'id': nova_id,
-        'titulo': dados['titulo'],
-        'descricao': dados.get('descricao', 'Sem observações'),
-        'pet': dados.get('pet', 'Não informado'),
-
-        'responsaveis': {
-            'criado': dados.get('responsavel', 'Não informado'),
-            'iniciado': None,
-            'concluido': None
-        },
-
-        'historico': f"Criado em: {agora}"
+        'id': str(proximo_id),
+        'titulo': titulo,
+        'descricao': descricao,
+        'pet': pet,
+        'historico': [
+            registro_criacao
+        ]
     }
+
+    proximo_id += 1
 
     quadro_tarefas['todo'].append(nova_tarefa)
 
     emit('atualizar_quadro', quadro_tarefas, broadcast=True)
 
 
+# move a tarefa de uma coluna para outra
 @socketio.on('mover_tarefa')
 def mover_tarefa(dados):
-    tarefa_id = dados['id']
-    coluna_origem = dados['origem']
-    coluna_destino = dados['destino']
-    responsavel = dados.get('responsavel', 'Não informado')
+    tarefa_id = dados.get('id')
+    coluna_origem = dados.get('origem')
+    coluna_destino = dados.get('destino')
+    responsavel = dados.get('responsavel', 'Alguém')
 
     if coluna_origem == coluna_destino:
         return
@@ -76,64 +112,89 @@ def mover_tarefa(dados):
 
     tarefa_movida = None
 
-    for tarefa in quadro_tarefas[coluna_origem]:
+    for tarefa in quadro_tarefas.get(coluna_origem, []):
         if tarefa['id'] == tarefa_id:
             tarefa_movida = tarefa
             break
 
-    if tarefa_movida:
-        quadro_tarefas[coluna_origem].remove(tarefa_movida)
+    if not tarefa_movida:
+        return
 
-        agora = datetime.now().strftime('%d/%m/%Y às %H:%M')
+    quadro_tarefas[coluna_origem].remove(tarefa_movida)
 
-        if coluna_destino == 'doing':
-            tarefa_movida['responsaveis']['iniciado'] = responsavel
-            tarefa_movida['historico'] += f" | Iniciado em: {agora}"
+    agora = obter_data_hora()
 
-        elif coluna_destino == 'done':
-            tarefa_movida['responsaveis']['concluido'] = responsavel
-            tarefa_movida['historico'] += f" | Concluído em: {agora}"
+    if 'historico' not in tarefa_movida:
+        tarefa_movida['historico'] = []
 
-        quadro_tarefas[coluna_destino].append(tarefa_movida)
+    if coluna_destino == 'doing':
+        registro = {
+            'acao': 'iniciado',
+            'responsavel': responsavel,
+            'data_hora': agora,
+            'etapa': 'doing'
+        }
 
-        emit('atualizar_quadro', quadro_tarefas, broadcast=True)
+        tarefa_movida['historico'].append(registro)
 
+    elif coluna_destino == 'done':
+        registro = {
+            'acao': 'concluido',
+            'responsavel': responsavel,
+            'data_hora': agora,
+            'etapa': 'done'
+        }
 
-@socketio.on('apagar_tarefa')
-def apagar_tarefa(dados):
-    tarefa_id = dados['id']
-    coluna = dados['coluna']
-    responsavel = dados.get('responsavel', 'Não informado')
+        tarefa_movida['historico'].append(registro)
 
-    agora = datetime.now().strftime('%d/%m/%Y às %H:%M')
-
-    for tarefa in quadro_tarefas[coluna]:
-        if tarefa['id'] == tarefa_id:
-
-            print(
-                f"Tarefa '{tarefa['titulo']}' "
-                f"apagada por {responsavel} em {agora}"
-            )
-
-            historico_exclusoes.append({
-                'tarefa': tarefa,
-                'etapa': coluna,
-                'responsavel': responsavel,
-                'data_hora': agora
-            })
-
-            quadro_tarefas[coluna].remove(tarefa)
-
-            break
+    quadro_tarefas[coluna_destino].append(tarefa_movida)
 
     emit('atualizar_quadro', quadro_tarefas, broadcast=True)
 
 
-@socketio.on('obter_historico')
-def enviar_historico():
-    emit('historico_atualizado', historico_exclusoes)
+# apaga a tarefa e salva os dados no histórico
+@socketio.on('apagar_tarefa')
+def apagar_tarefa(dados):
+    tarefa_id = dados.get('id')
+    coluna = dados.get('coluna')
+    responsavel = dados.get('responsavel', 'Alguém')
+
+    agora = obter_data_hora()
+
+    tarefa_encontrada = None
+
+    for tarefa in quadro_tarefas.get(coluna, []):
+        if tarefa['id'] == tarefa_id:
+            tarefa_encontrada = tarefa
+            break
+
+    if not tarefa_encontrada:
+        return
+
+    historico_exclusoes.append({
+        'tarefa': tarefa_encontrada,
+        'etapa': coluna,
+        'responsavel': responsavel,
+        'data_hora': agora
+    })
+
+    print(
+        f"Tarefa '{tarefa_encontrada['titulo']}' "
+        f"apagada por {responsavel} em {agora}"
+    )
+
+    quadro_tarefas[coluna].remove(tarefa_encontrada)
+
+    emit('atualizar_quadro', quadro_tarefas, broadcast=True)
+
+    emit(
+        'historico_atualizado',
+        historico_exclusoes,
+        broadcast=True
+    )
 
 
+# inicia o servidor
 if __name__ == '__main__':
     socketio.run(
         app,

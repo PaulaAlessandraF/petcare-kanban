@@ -110,10 +110,33 @@ header h1 {
 /* Estilo para a data/hora e botão de apagar */
 .cartao-historico {
     font-size: 0.72rem;
-    color: #94a3b8;
+    color: #64748b;
     border-top: 1px solid #f1f5f9;
-    padding-top: 5px;
-    margin-top: 5px;
+    padding-top: 8px;
+    margin-top: 10px;
+}
+
+.registro-historico {
+    padding: 4px 0;
+}
+
+.registro-historico strong {
+    display: block;
+    color: #475569;
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+}
+
+.registro-historico p {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 0.7rem;
+}
+
+.cartao-historico hr {
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    margin: 7px 0;
 }
 
 .btn-apagar {

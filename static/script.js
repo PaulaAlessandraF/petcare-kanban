@@ -14,6 +14,8 @@ socket.on('atualizar_quadro', function(tarefas) {
 socket.on('historico_atualizado', function(listaHistorico) {
     var container = document.getElementById('historico');
 
+    container.innerHTML = '';
+
     listaHistorico.forEach(function(registro) {
         var responsavel = registro.responsavel;
         var dataHora = registro.data_hora;
@@ -60,11 +62,17 @@ function renderizarColuna(colunaId, listaTarefas) {
         cartao.className = 'cartao-tarefa';
         cartao.draggable = true; 
         
+        var elementoResponsavel = document.getElementById('labelResponsavel');
+        var nomeResponsavel = elementoResponsavel.innerText
+            .split("Cuidador(a):")[1]
+            .trim();
+
         cartao.innerHTML = `
             <button class="btn-apagar" onclick="apagarTarefa('${tarefa.id}', '${colunaId}')" title="Excluir">✕</button>
             <h4> ${tarefa.titulo}</h4>
             <p><strong>Pet:</strong> ${tarefa.pet}</p>
             <p>${tarefa.descricao}</p>
+            <p> <strong> Respnsável:</strong> ${nomeResponsavel}</p>
             <div class="cartao-historico"> ${tarefa.historico}</div>
         `;
 

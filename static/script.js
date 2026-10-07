@@ -143,10 +143,7 @@ function renderizarColuna(colunaId, listaTarefas) {
         cartao.className = 'cartao-tarefa';
         cartao.draggable = true;
 
-        var nomeResponsavel = obterResponsavel();
-
         var historicoHtml = montarHistoricoCard(tarefa.historico);
-
         cartao.innerHTML = `
             <button
                 class="btn-apagar"
@@ -165,9 +162,6 @@ function renderizarColuna(colunaId, listaTarefas) {
                 ${tarefa.descricao}
             </p>
 
-            <p>
-                <strong>Responsável:</strong> ${nomeResponsavel}
-            </p>
 
             <div class="cartao-historico">
                 ${historicoHtml}

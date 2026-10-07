@@ -1,4 +1,4 @@
-var socket = io();
+var socket = io(); //troca de msg em tempo real
 
 
 socket.on('connect', function() {
@@ -10,11 +10,11 @@ socket.on('atualizar_quadro', function(tarefas) {
     renderizarColuna('todo', tarefas.todo);
     renderizarColuna('doing', tarefas.doing);
     renderizarColuna('done', tarefas.done);
-});
+}); //mostra cada tarefa na coluna correta
 
 
 socket.on('historico_atualizado', function(listaHistorico) {
-    var container = document.getElementById('historico');
+    var container = document.getElementById('historico'); // pega o elemento hist. do doc. e coloca no container
 
     if (!container) return;
 
@@ -38,7 +38,7 @@ socket.on('historico_atualizado', function(listaHistorico) {
             etapa = 'Concluído';
         }
 
-        var item = document.createElement('div');
+        var item = document.createElement('div'); // criar uma nova caixinha 
 
         item.innerHTML = `
             <strong>${titulo}</strong>
@@ -48,7 +48,7 @@ socket.on('historico_atualizado', function(listaHistorico) {
             <p>Data e hora: ${dataHora}</p>
         `;
 
-        container.appendChild(item);
+        container.appendChild(item); // colocar item no container
     });
 });
 
@@ -83,7 +83,7 @@ function obterResponsavel() {
         if (nome !== '') {
             return nome;
         }
-    }
+    } 
 
     return 'Alguém';
 }
@@ -130,7 +130,7 @@ function montarHistoricoCard(historico) {
 }
 
 
-function renderizarColuna(colunaId, listaTarefas) {
+function renderizarColuna(colunaId, listaTarefas) { // mostrar o que te em cada coluna
     var container = document.getElementById('lista-' + colunaId);
 
     if (!container) return;
@@ -168,7 +168,7 @@ function renderizarColuna(colunaId, listaTarefas) {
             </div>
         `;
 
-        cartao.addEventListener('dragstart', function(evento) {
+        cartao.addEventListener('dragstart', function(evento) { //detecta  o evento de arrastar, quando começamos a arrastar e chama a funcao pra lidar com isso
             evento.dataTransfer.setData(
                 'text/plain',
                 JSON.stringify({
@@ -209,7 +209,7 @@ function soltar(evento, colunaDestino) {
 
 
 function adicionarTarefa() {
-    var inputTitulo = document.getElementById('tituloTarefa');
+    var inputTitulo = document.getElementById('tituloTarefa'); // pega o elemento pelo id
     var inputDescricao = document.getElementById('descricaoTarefa');
 
     var titulo = inputTitulo.value.trim();
@@ -217,7 +217,7 @@ function adicionarTarefa() {
 
     if (titulo !== '') {
 
-        var elementoPet = document.getElementById('labelPet');
+        var elementoPet = document.getElementById('labelPet'); 
 
         if (!elementoPet) {
             return;

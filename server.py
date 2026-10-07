@@ -26,15 +26,15 @@ def obter_data_hora():
     return agora.strftime('%d/%m/%Y às %H:%M')
 
 
-@app.route('/')
+@app.route('/') #definir uma rota pra dizer o q o flak tem que fazer 
 def pagina_inicial():
     return render_template('index.html')
 
 
 # envia o quadro atual para o navegador
-@socketio.on('obter_quadro')
+@socketio.on('obter_quadro') # .on ele ta ouvindo esperando um evento
 def enviar_quadro():
-    emit('atualizar_quadro', quadro_tarefas)
+    emit('atualizar_quadro', quadro_tarefas) #envia eveento do cliente pro servidor ou do servidor pro cliente
 
 
 # envia o histórico de exclusões
@@ -57,7 +57,7 @@ def limpar_historico():
 # cria uma nova tarefa
 @socketio.on('adicionar_tarefa')
 def adicionar_tarefa(dados):
-    global proximo_id
+    global proximo_id #cada tarefa recebe um id unico
 
     agora = obter_data_hora()
 
@@ -87,7 +87,7 @@ def adicionar_tarefa(dados):
 
     quadro_tarefas['todo'].append(nova_tarefa)
 
-    emit('atualizar_quadro', quadro_tarefas, broadcast=True)
+    emit('atualizar_quadro', quadro_tarefas, broadcast=True) #todo mundo recebe a atualizacao
 
 
 # move a tarefa de uma coluna para outra
@@ -112,7 +112,7 @@ def mover_tarefa(dados):
 
     tarefa_movida = None
 
-    for tarefa in quadro_tarefas.get(coluna_origem, []):
+    for tarefa in quadro_tarefas.get(coluna_origem, []): # encontra a tarefa certa e mover card e atualiza
         if tarefa['id'] == tarefa_id:
             tarefa_movida = tarefa
             break
@@ -124,7 +124,7 @@ def mover_tarefa(dados):
 
     agora = obter_data_hora()
 
-    if 'historico' not in tarefa_movida:
+    if 'historico' not in tarefa_movida: #historico da tarefa dps de ser movida 
         tarefa_movida['historico'] = []
 
     if coluna_destino == 'doing':
@@ -198,8 +198,8 @@ def apagar_tarefa(dados):
 if __name__ == '__main__':
     socketio.run(
         app,
-        host='0.0.0.0',
-        port=5000,
-        debug=True,
-        allow_unsafe_werkzeug=True
+        host='0.0.0.0', #aceita conexoes de qualquer lugar 
+        port=5000, #porta onde servidor recebe conexoes
+        debug=True, #ativa o modo pra ajudar a encontrar erros
+        allow_unsafe_werkzeug=True #servidor de des. que o flask usa.
     )

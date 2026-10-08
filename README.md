@@ -12,7 +12,9 @@ O PetCare foi desenvolvido como um sistema de gerenciamento de tarefas baseado e
 
 Cada tarefa possui informações sobre o pet, descrição e histórico de movimentações, permitindo acompanhar quando uma tarefa foi criada, iniciada e concluída, além de atribuir a responsabilidade por cada ação ao usuário selecionado.
 
+
 ## Funcionalidades
+
 - Criação de tarefas
 - Identificação do pet
 - Identificação do responsável pelos cuidados
@@ -24,6 +26,10 @@ Cada tarefa possui informações sobre o pet, descrição e histórico de movime
 - Histórico de tarefas excluídas
 - Limpeza do histórico de exclusões
 - Atualização do quadro em tempo real entre usuários conectados
+## Interface do sistema
+
+<img width="700"  alt="Captura de tela 2026-10-07 162808" src="https://github.com/user-attachments/assets/ca74dc2d-e513-4604-a266-8a7ecf383b3f" />
+
 
 ## Comunicação em tempo real
 A aplicação utiliza **Socket.IO** para realizar a comunicação entre o navegador e o servidor. O navegador atua como cliente e envia eventos para o servidor. O servidor, desenvolvido em Python com Flask-SocketIO, recebe esses eventos, processa as informações e envia as atualizações de volta aos clientes conectados.

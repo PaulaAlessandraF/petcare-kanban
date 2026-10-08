@@ -28,7 +28,7 @@ Cada tarefa possui informações sobre o pet, descrição e histórico de movime
 - Atualização do quadro em tempo real entre usuários conectados
 ## Interface do sistema
 
-<img width="700"  alt="Captura de tela 2026-10-07 162808" src="https://github.com/user-attachments/assets/ca74dc2d-e513-4604-a266-8a7ecf383b3f" />
+<img width="700"  alt="Captura de tela 2026-10-08 115705" src="https://github.com/user-attachments/assets/37eff925-acbc-4deb-84d7-59aca3b990ee" />
 
 
 ## Comunicação em tempo real
